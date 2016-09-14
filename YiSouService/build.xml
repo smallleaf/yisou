@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="package" default="default" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+	<description>项目打包</description>
+
+	<path id="maven-ant-tasks.classpath" path="D:/maven/ant/lib/maven-ant-tasks-2.1.3.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven-ant-tasks.classpath" />
+	
+	<!--加入标签-->
+	<path id="maven-ant-trib.classpath" path="D:/maven/ant/lib/ant-contrib-1.0b3.jar" />
+		<typedef resource="net/sf/antcontrib/antcontrib.properties"  classpathref="maven-ant-trib.classpath" />
+	<!--读取pom中的配置-->
+	<xmlproperty file="pom.xml"/>
+	
+	<if>
+		<isset property="${project.packaging}" />
+		<else>
+			<property name="project.packaging" value="jar" />
+		</else>
+	</if>
+	
+	
+	<property environment="env" />
+	<property file="build.properties" />
+	<!--项目最终打包的名字-->
+	<property name="final.name" value="${project.artifactId}-${project.version}.jar" />
+	
+	<!-- 编译目标文件 -->
+	<property name="target.dir" value="target" />
+	<property name="src.dir" value="src/main/java" />
+	
+	<!--编译文件 classes 等等以后直接放在服务器上 -->
+	<property name="build.dir" value="${target.dir}/${project.artifactId}/classes" />
+	
+	<!--编译后的jar和war包的位置-->
+	<property name="dist.dir" value="${target.dir}/dist/${project.version}"/>
+	
+	<!--编译后的文件放在本地一份-->
+	<property name="local.dir" value="${localDir}/${project.artifactId}/${project.version}"></property>
+	<!--编译配置文件-->
+	<property name="config.dir" location="src/main/resources" />
+	<!--生成doc-->
+	<property name="doc.dir" location="${dist.dir}" />
+	<!---web配置文件-->
+	<property name="web.root" location="web/WEB-INF" />
+	<property name="web.dir" location="${target.dir}/${project.artifactId}/web/WEB-INF" />
+	<!--生成启动脚本-->
+	<property name="bin.dir" location="${target.dir}/${project.artifactId}/bin" />
+	
+
+	<!--编译后jar放的位置-->
+	<property name="lib.dir" location="${target.dir}/${project.artifactId}/lib" />
+	<!--依赖的jar包-->
+	<property name="libraries.dir" location="../${libraries.project}/lib" />
+	
+	<artifact:pom id="maven.project" file="pom.xml" />
+	<artifact:dependencies filesetId="deps.fileset.compile" useScope="compile">
+		<pom refid="maven.project" />
+	</artifact:dependencies>
+	
+	<!--将jar包放在编译的目录-->
+	<path id="compile.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${libraries.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="delete" description="删除文件夹">
+		<delete dir="${target.dir}">
+		</delete>
+	</target>
+
+	<target name="makedir" description="建立文件夹" depends="delete">
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${lib.dir}"/>
+		<mkdir dir="${local.dir}"/>
+		<mkdir dir="${web.dir}"/>
+		<mkdir dir="${bin.dir}"/>
+	</target>
+
+	<!--下载jar包，用maven先得下载jar-->
+	<target name="download-libs" depends="makedir">
+		<copy todir="${lib.dir}">
+			<fileset refid="deps.fileset.compile" />
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="compile" depends="download-libs" description="编译代码">
+		<javac srcdir="${src.dir}"
+	               destdir="${build.dir}"
+	               encoding="UTF-8"
+	               includeantruntime="false"
+	               excludes="**/test/*,**/test/bean/*,**/*.svn,*.svn"
+	               includes="**/*.java"
+	               source="1.7"
+	               target="1.7"
+					listfiles="true"
+	               deprecation="true"
+	               debug="true">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<!--生成Javadoc 文档 -->
+	<target name="javadoc" description="生成Javadoc文档.">
+		<delete dir="${doc.dir}"/>
+		<mkdir dir="${doc.dir}"/>
+		<javadoc destdir="${doc.dir}" windowtitle="${project} Javadoc" use="yes"
+	                 linksource="no" splitindex="yes" encoding="UTF-8"
+	                 docencoding="UTF-8" locale="zh_CN">
+			<classpath refid="classpath"/>
+			<packageset dir="${src.dir}" defaultexcludes="yes">
+				<include name="${domain}/${package}/**"/>
+			</packageset>
+		</javadoc>
+	</target>
+
+	<target name="package" depends="compile" description="打包成Jar" >
+		<mkdir dir="${dist.dir}" />
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss"/>
+			<format property="TIME" pattern="yyMMddHHmm"/>
+		</tstamp>
+
+		<!-- 打包所有的编译文件 -->
+		<jar jarfile="${dist.dir}/${final.name}"
+	         basedir="${build.dir}" >
+		</jar>
+
+		<!-- 把jar copy到指定备份目录 -->
+		<copy todir="${local.dir}">
+			<fileset dir="${dist.dir}" includes="${final.name}"/>
+		</copy>
+
+		<!-- 把资源文件房子build目录 -->
+		<copy todir="${build.dir}">
+			<fileset dir="${config.dir}" includes="**/*"/>
+		</copy>
+		<!--将web.root配置放入到编译后的文件中-->
+		<copy todir="${web.dir}">
+			<fileset dir="${web.root}" includes="**/*"/>
+		</copy>
+		<!---将依赖包放入-->
+		<copy todir="${lib.dir}">
+				<fileset dir="${libraries.dir}" includes="*.jar"/>
+		</copy>
+		
+		<!-- 生成war配置及部署文件
+	        <war destfile="${dist.dir}/${project.artifactId}-${project.version}.war"
+	             webxml="${web.root}/WEB-INF/web.xml">
+	            <fileset dir="${web.root}" excludes="${web.root}/WEB-INF/classes/*"></fileset>
+	            <classes dir="${build.dir}" />
+	            <lib dir="${lib.dir}" includes="**/*.jar" />
+	        </war>  -->
+
+		<!--
+	          <jar jarfile="${dist.dir}/${version}/${domain}.${package}.${project}.client.bin.${version}.v${TIME}.jar"
+	               basedir="${client.build.dir}" manifest="${web.root}/META-INF/MANIFEST.MF">
+	          </jar>
+	          <jar jarfile="${dist.dir}/${version}/${domain}.${project}.sources.${version}.jar"
+	               basedir="${src.dir}" manifest="${web.root}/META-INF/MANIFEST.MF">
+	          </jar>
+	          <jar jarfile="${dist.dir}/${version}/${domain}.${project}.testsource.${version}.jar"
+	              basedir="${test.dir}" manifest="${web.root}/META-INF/MANIFEST.MF">
+	          </jar>
+
+	          <jar jarfile="${dist.dir}/${version}/${domain}.${project}.javadoc.${version}.jar"
+	              basedir="${doc.dir}" manifest="${web.root}/META-INF/MANIFEST.MF"/>
+	          -->
+
+	</target>
+
+	<target name="default" depends="package">
+		
+	</target>
+	
+	<!--生成启动脚本-->
+	<target name="generate-start" description="生成启动命令">
+		<property name="main.java" value="com.yisou.server.Application" />
+		<java classname="com.smallleaf.shell.GenerateShell">
+			<arg value="${bin.dir}"/>
+			<arg value="${lib.dir}"/>
+			<arg value="${main.java}"/>
+			<arg value="${project.artifactId}"/>
+			<classpath>
+				<path location="${lib.dir}" />
+				<fileset dir="${generate.lib}">
+					<include name="**/*.jar" />
+					</fileset>
+		</classpath>
+		</java>
+	</target>
+</project>
