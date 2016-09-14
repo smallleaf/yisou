@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<bean id="panSearchService" class="com.yisou.server.service.PanSearchService">
+		<property name="searchPanMap" ref="searchPanMap"></property>
+	</bean>
+	<bean id="jarSearchService" class="com.yisou.server.service.JarSearchService">
+		<property name="searchCx" value="${maven.jar.cx}"></property>
+	</bean>
+	<bean id="fileSearchService" class="com.yisou.server.service.FileSearchService"></bean>
+	
+	<util:map  id="searchServiceMap">
+		<entry key="pan" value-ref="panSearchService"></entry>
+		<entry key="file" value-ref="fileSearchService"></entry>
+		<entry key="jar" value-ref="jarSearchService"></entry>
+	</util:map >
+	
+	<bean id="searchServiceRouter" class="com.yisou.server.service.SearchServiceRouter">
+		<property name="searchServiceMap" ref="searchServiceMap"></property>
+	</bean>
+	
+	
+	 <bean id="taskExecutor"   
+        class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">  
+                <property name="corePoolSize" value="5" />  
+                <property name="maxPoolSize" value="10" />  
+                <property name="WaitForTasksToCompleteOnShutdown" value="true" />  
+     </bean>  
+     
+     <util:map id="searchPanMap">
+     		<entry key="panbaidu">
+     			<map>
+     				<entry key="cx" value="${pan.baidu.cx}"></entry>
+     				<entry key="url" value="${google.search.url}"></entry>
+     			</map>
+     		</entry>
+     		<entry key="yunbaidu">
+     			<map>
+     				<entry key="cx" value="${yun.baidu.cx}"></entry>
+     				<entry key="url" value="${google.search.url}"></entry>
+     			</map>
+     		</entry>
+     		<entry key="yunpan">
+     			<map>
+     				<entry key="cx" value="${yunpan.cn.cx}"></entry>
+     				<entry key="url" value="${google.search.url}"></entry>
+     			</map>
+     		</entry>
+     </util:map>
+     
+</beans>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+	<!-- Jetty服务器类 -->
+	<bean id="jettyServer" class="org.eclipse.jetty.server.Server" destroy-method="stop">
+		<property name="connectors">
+			<list>
+				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+					<property name="port" value="#{conf.webPort}" />
+					<property name="acceptors" value="2"></property>
+					<property name="acceptQueueSize" value="128"></property>
+					<property name="threadPool">
+						<bean class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+							<property name="maxThreads" value="512"></property>
+							<property name="minThreads" value="32"></property>
+						</bean>
+					</property>
+					<property name="maxIdleTime" value="#{3*60*1000}"></property>
+				</bean>
+			</list>
+		</property>
+		<property name="threadPool">
+			<bean class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+				<property name="maxThreads" value="2048"></property>
+				<property name="minThreads" value="32"></property>
+			</bean>
+		</property>
+		<property name="handler">
+			<bean class="org.eclipse.jetty.webapp.WebAppContext">
+				<property name="contextPath" value="/"></property>
+				<property name="descriptor" value="#{conf.resourceBase}/WEB-INF/web.xml"></property>
+				<property name="resourceBase" value="#{conf.resourceBase}"></property>
+				<property name="configurationDiscovered" value="true"></property>
+				<property name="parentLoaderPriority" value="true"></property>
+				<property name="maxFormContentSize" value="#{2*1000*1000}"></property>
+			</bean>
+		</property>
+	</bean>
+
+
+</beans>

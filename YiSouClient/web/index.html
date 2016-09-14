@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="static/bootstrap3/css/bootstrap.min.css">
+	<script type="text/javascript" src="static/bootstrap3/js/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="static/bootstrap3/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="static/css/yisou.css">
+	
+	<title>易搜</title>
+	<style type="text/css">
+		.search{
+			width:40%;
+			min-width: 300px;
+			margin-top: 200px;
+		}
+		.search-lable a{
+			outline: none;
+		}
+		
+	</style>
+	<script type="text/javascript">
+		$(function(){
+			$(".search-nav ul li").click(function(){
+				$("#searchType").val($(this).children("span").html());
+				$(this).siblings("li").attr("class","");
+				$(this).attr("class","active");
+			})
+			$("#searchBtn").click(function(){
+				$("#indexForm").submit();
+			})
+			$("#jar").click(function(){
+				$("#indexForm").attr("action","http://localhost:8083/jar.do")
+			})
+			$("li:not(#jar)").click(function(){
+				$("#indexForm").attr("action","search.do")
+			})
+			
+		})
+	</script>
+</head>
+<body>
+	<div class="center-block search">
+	<form method="get" id="indexForm" action="search.do">
+		<input type="text" style="display:none;" id="searchType" name="searchType" value="pan"></input>
+		<input type="text" style="display:none;" id="page" name="page" value='1'></input>
+		<div class="search-nav">
+			<ul class="nav nav-tabs">
+				<li role="presentation" class="active">
+				<span class="hide">pan</span>
+					<a>网盘
+					</a>
+				</li>
+				<li role="presentation" class="">
+				<span class="hide">file</span>
+					<a>文档
+						
+					</a>
+				</li>
+				<li role="presentation" id="jar" class="">
+				<span class="hide">jar</span>
+					<a>Jar
+						
+					</a>
+				</li>
+				<li role="presentation" class="">
+				<span class="hide">other</span>
+					<a>其他
+						
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div class="input-group">
+			<input type="text" class="form-control" id="q" autocomplete="off" placeholder="搜索网盘"  name="searchContent">
+			<span class="input-group-btn">
+				<button class="btn btn-default" id="searchBtn" type="button">易搜一下</button>
+			</span>
+		</div>
+		<div class="search-tip">
+			<div id="sug"></div>
+		</div>
+	</form>
+	</div>
+</body>
+</html>
+<script type="text/javascript" src="static/js/base.js"></script>
