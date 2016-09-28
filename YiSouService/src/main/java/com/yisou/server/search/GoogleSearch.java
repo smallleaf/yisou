@@ -34,6 +34,7 @@ public class GoogleSearch {
 		searchUrl.append("&cx=" + cx);
 		searchUrl.append("&num=" + num);
 
+//		String returnContent = HttpUtils.get(searchUrl.toString());
 		String returnContent = HttpUtils.getByProxy(searchUrl.toString(),
 				"localhost", 8087);
 

@@ -27,6 +27,7 @@
 	<!-- 编译目标文件 -->
 	<property name="target.dir" value="target" />
 	<property name="src.dir" value="src/main/java" />
+
 	
 	<!--编译文件 classes 等等以后直接放在服务器上 -->
 	<property name="build.dir" value="${target.dir}/${project.artifactId}/classes" />
@@ -174,7 +175,7 @@
 
 	</target>
 
-	<target name="default" depends="package">
+	<target name="default" depends="package,generate-start">
 		
 	</target>
 	
@@ -194,4 +195,23 @@
 		</classpath>
 		</java>
 	</target>
+	
+	<property name="server.dir" value="${server.username}:${server.password}@${server.host}:/${server.project.url}/${project.artifactId}" />
+	
+	<!--将项目上传部署到服务器-->
+	<target name="deploy" description="将项目上传部署到服务器">
+		<sshexec host="${server.host}" username="${server.username}" password="${server.password}" command="cd /;mkdir -p ${server.project.url}/${project.artifactId}" trust="true" failonerror="false" />
+		<!--verbose用来显示上传速度-->
+		<scp todir="${server.dir}" trust="true" verbose="true" >
+			<fileset  dir="${target.dir}/${project.artifactId}" />
+		</scp>
+	</target>
+	
+	<!--上传编译文件到服务器-->
+	<target name="deployClasses" description="将项目上传部署到服务器">
+			<!--verbose用来显示上传速度-->
+			<scp todir="${server.dir}/classes" trust="true" verbose="true" >
+				<fileset  dir="${target.dir}/${project.artifactId}/classes" />
+			</scp>
+</target>
 </project>
