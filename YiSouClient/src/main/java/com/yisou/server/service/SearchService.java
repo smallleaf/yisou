@@ -1,6 +1,5 @@
 package com.yisou.server.service;
 
-import com.yisou.server.model.SearchContent;
 import com.yisou.server.model.SearchContentSum;
 
 /***

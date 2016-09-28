@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<!-- 格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %c{1}.%M:%L - %m%n</pattern>
-		</encoder>
-	</appender>
-
-
-	<logger name="com" level="INFO" />
-
-	<root level="INFO">
-		<appender-ref ref="console" />
-	</root>
-
+    <appender name="fileAppender" class="ch.qos.logback.core.FileAppender">  
+        <file>../logs/server.log</file>  
+        <encoder><!-- 必须指定，否则不会往文件输出内容 -->  
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>  
+        </encoder>  
+        <append>true</append>  
+        <prudent>false</prudent>  
+    </appender>  
+      
+    <root level="INFO">  
+        <appender-ref ref="fileAppender" />  
+    </root>  
 </configuration>

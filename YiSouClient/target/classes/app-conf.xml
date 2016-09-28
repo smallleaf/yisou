@@ -9,7 +9,7 @@
 		<!-- 服务器端口 -->
 		<entry key="webPort" value="8082" ></entry>
 		<!-- Web资源目录 -->
-		<entry key="resourceBase" value="./web"></entry>
+		<entry key="resourceBase" value="web"></entry>
 	</util:map>
 	
 	<context:property-placeholder location="mysql.properties,search.properties" />

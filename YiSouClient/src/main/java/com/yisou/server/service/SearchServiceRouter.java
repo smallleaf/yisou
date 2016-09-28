@@ -4,10 +4,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.yisou.server.model.SearchContent;
 import com.yisou.server.model.SearchContentSum;
 
 /***
@@ -18,10 +16,21 @@ public class SearchServiceRouter {
 	private Logger logger = LoggerFactory.getLogger(SearchServiceRouter.class);
 	private Map<String, SearchService> searchServiceMap;
 	
-	public SearchContentSum searchContent(String searchContent,int page,String searchType){
+	
+	public ModelAndView searchContent(String searchContent,int page,String searchType){
 		if(searchServiceMap.containsKey(searchType)){
-			return searchServiceMap.get(searchType).searchContent(searchContent, page);
+			SearchContentSum searchContentSum = searchServiceMap.get(searchType).searchContent(searchContent, page);
+			ModelAndView modelAndView = new ModelAndView("index");
+			modelAndView.addObject("searchContent", searchContentSum);
+			modelAndView.addObject("search", searchContent);
+			modelAndView.addObject("searchType", searchType);
+			modelAndView.addObject("page", page);
+			return modelAndView;
 		}
+//		else if(searchType.equals("jar")) {
+//			JarSearchByDBService searchByDBService =new JarSearchByDBService();
+//			return searchByDBService.jarSearch(searchContent);
+//		}
 		logger.info("未找到搜索类型:{}",searchType);
 		return null;
 	}

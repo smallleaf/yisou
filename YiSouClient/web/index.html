@@ -29,14 +29,7 @@
 			})
 			$("#searchBtn").click(function(){
 				$("#indexForm").submit();
-			})
-			$("#jar").click(function(){
-				$("#indexForm").attr("action","http://localhost:8083/jar.do")
-			})
-			$("li:not(#jar)").click(function(){
-				$("#indexForm").attr("action","search.do")
-			})
-			
+			})		
 		})
 	</script>
 </head>
@@ -61,13 +54,6 @@
 				<li role="presentation" id="jar" class="">
 				<span class="hide">jar</span>
 					<a>Jar
-						
-					</a>
-				</li>
-				<li role="presentation" class="">
-				<span class="hide">other</span>
-					<a>其他
-						
 					</a>
 				</li>
 			</ul>
@@ -82,6 +68,10 @@
 			<div id="sug"></div>
 		</div>
 	</form>
+	</div>
+	<div class="footer-info">
+		<p style="text-indent:2em;">免责申明:本系统采用Google自定义义搜索引擎，若搜索内容有侵权请联系站长:小叶 3478483557(QQ)
+			本站源码：大神请忽视-----<a href="https://github.com/smallleaf/yisou">召唤传送门</a></p>
 	</div>
 </body>
 </html>

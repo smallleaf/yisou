@@ -3,6 +3,11 @@ body{
 font-family: Î¢ÈíÑÅºÚ£»
 
 }
+
+@media (min-width: @screen-sm-min) { 
+
+	
+}
 	#sug {
 		border: 1px solid #66afe9;
 		display: none;
@@ -102,4 +107,13 @@ font-family: Î¢ÈíÑÅºÚ£»
 	color:gray;
 }
 div{word-break:break-all;}
+
+.footer-info{
+			width: 400px;
+			position: absolute;
+			bottom: 5px;
+			left: 50%;
+			margin-left: -200px;
+			font-size: 14px;
+		}
 
